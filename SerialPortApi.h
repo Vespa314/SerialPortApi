@@ -4,7 +4,7 @@
 #include <afxmt.h>
 #include <deque>
 
-#define PORT_DEBUG_MODE 1
+#define PORT_DEBUG_MODE 0
 
 #define MAX_PORT_NUM 256
 
@@ -20,7 +20,7 @@
 #define PARITY_INVALID -5
 #define STOPBIT_INVALID -6
 
- #define BUFSIZE 65536	
+#define BUFSIZE 65536	
 
 static const DWORD BAUDRATE[] = 
 {CBR_110,CBR_300,CBR_600,CBR_1200,CBR_2400,CBR_4800,

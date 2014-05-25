@@ -109,8 +109,11 @@ INT CSerialPortApi::OpenPort( CString sPort,DWORD dwBaudRate,BYTE byDataBits,BYT
   	}
   	else
   	{
-		//CString str = m_port.GetError();
-		//AfxMessageBox(str);
+		if(PORT_DEBUG_MODE)
+		{
+			CString str = m_port.GetError();
+			AfxMessageBox(str);
+		}
   		return OPEN_PORT_FAIL;
   	}
 }
