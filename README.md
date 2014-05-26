@@ -50,7 +50,10 @@ if(COMPort.ReceiveFlag)
 * **dwBaudRate**：波特率，使用宏`BAUDRATE`中的元素，否则会返回错误；
 ```
 static const DWORD BAUDRATE[] = 
-{CBR_110,CBR_300,CBR_600,CBR_1200,CBR_2400,CBR_4800,CBR_9600,CBR_14400,CBR_19200,CBR_38400,CBR_56000 ,CBR_57600,CBR_115200 ,CBR_128000 ,CBR_256000 };
+{CBR_110,CBR_300,CBR_600,CBR_1200,CBR_2400,
+CBR_4800,CBR_9600,CBR_14400,CBR_19200,
+CBR_38400,CBR_56000 ,CBR_57600,CBR_115200,
+CBR_128000 ,CBR_256000 };
 ```
 * **byDataBits**：数据位，可选值只有`6`,`7`,`8`，否则返回错误；
 * **byParity**：校验位，使用宏`PARITY`中的元素(分别表示`无校验`,`奇校验`,`偶校验`,`标记`,`空格`)，否则会返回错误；
@@ -63,9 +66,23 @@ static const DWORD STOPBITS[]={ONESTOPBIT,ONE5STOPBITS,TWOSTOPBITS};
 ```
 
 返回值：
+* 串口名有误：`PORT_NUM_INVALID`
+* 波特率有误：`BAUDRATE_INVALID`
+* 数据位有误：`DATABITS_INVALID`
+* 校验位有误：`PARITY_INVALID`
+* 停止位有误：`STOPBIT_INVALID`
 * 成功：`OPEN_PORT_SUCCESS`
 * 失败：`OPEN_PORT_FAIL`
-> 错误信息可以用`CString CSerialPortApi::ErrorMsg()`获取
+
+> `OPEN_PORT_FAIL`的详细错误信息可以用`CString CSerialPortApi::ErrorMsg()` 获取，另外如果打开串口失败又找不到原因的话，可以将`SerialPortApi.h`中的：
+```
+#define PORT_DEBUG_MODE 0
+```
+改成：
+```
+#define PORT_DEBUG_MODE 1
+```
+这样出错了会以弹窗显示错误原因；
 
 ##### 2.关闭串口：
 `INT CSerialPortApi::ClosePort();`
