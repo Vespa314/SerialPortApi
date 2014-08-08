@@ -22,6 +22,8 @@
 
 #define BUFSIZE 65536	
 
+#define uchar unsigned char
+
 static const DWORD BAUDRATE[] = 
 {CBR_110,CBR_300,CBR_600,CBR_1200,CBR_2400,CBR_4800,
 CBR_9600,CBR_14400,CBR_19200,CBR_38400,CBR_56000 ,
@@ -51,10 +53,13 @@ public:
 	INT ClosePort();
 	//发送数据
 	void Send(CString str);
+	void Send(uchar str[], unsigned int SendLength);
 	//是否有接受数据未读取
 	BOOL ReceiveFlag;
-	//读取接受的数据
+	//读取接受的数据  二选一
 	CString ReadRecv();
+	deque<BYTE> ReadRecvByte();
+
 	CString ErrorMsg();
 private:
 	//************************************
@@ -75,7 +80,8 @@ private:
 
 	static UINT SendThreadProc(LPVOID pParam);
 	static UINT RevThreadProc(LPVOID pParam);
-	CString Str4Send;
+	uchar* Str4Send;
+	size_t mSendLength;
 
 	CCriticalSection m_bRevCS;
 	deque<BYTE> m_dequeRevData;

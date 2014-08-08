@@ -15,7 +15,7 @@ CSerialPortApi::CSerialPortApi(void)
 		); 
 // 	if(m_hSendEvent==NULL)
 // 		return false;
-
+	Str4Send = NULL;
 	getExistPort();
 }
 
@@ -93,11 +93,11 @@ void CSerialPortApi::getExistPort()
 
 INT CSerialPortApi::OpenPort( CString sPort,DWORD dwBaudRate,BYTE byDataBits,BYTE byParity,BYTE byStopBits )
 {
-	if(!IsPortValid(sPort))  return PORT_NUM_INVALID;
-	if(!IsBaudrateValid(dwBaudRate))  return BAUDRATE_INVALID;
-	if(!IsDataBitValid(byDataBits))  return DATABITS_INVALID;
-	if(!IsParityValid(byParity))  return PARITY_INVALID;
-	if(!IsStopbitValid(byStopBits))  return STOPBIT_INVALID;
+ 	if(!IsPortValid(sPort))  return PORT_NUM_INVALID;
+ 	if(!IsBaudrateValid(dwBaudRate))  return BAUDRATE_INVALID;
+ 	if(!IsDataBitValid(byDataBits))  return DATABITS_INVALID;
+ 	if(!IsParityValid(byParity))  return PARITY_INVALID;
+ 	if(!IsStopbitValid(byStopBits))  return STOPBIT_INVALID;
 
  	m_hCom = m_port.OpenPort(sPort,dwBaudRate,byDataBits,byParity,byStopBits);
   	if(m_hCom != INVALID_HANDLE_VALUE)
@@ -108,14 +108,14 @@ INT CSerialPortApi::OpenPort( CString sPort,DWORD dwBaudRate,BYTE byDataBits,BYT
   		return OPEN_PORT_SUCCESS;
   	}
   	else
-  	{
-		if(PORT_DEBUG_MODE)
-		{
-			CString str = m_port.GetError();
-			AfxMessageBox(str);
-		}
-  		return OPEN_PORT_FAIL;
-  	}
+   	{
+ 		if(PORT_DEBUG_MODE)
+ 		{
+ 			CString str = m_port.GetError();
+ 			AfxMessageBox(str);
+ 		}
+   		return OPEN_PORT_FAIL;
+   	}
 }
 
 
@@ -205,7 +205,26 @@ BOOL CSerialPortApi::IsStopbitValid( BYTE byStopBits )
 
 void CSerialPortApi::Send( CString str )
 {
-	Str4Send = str;
+	mSendLength = str.GetLength();
+	if(!Str4Send)
+		Str4Send = new uchar[mSendLength];
+	char* temp = str.GetBuffer();
+	for(size_t i = 0;i < mSendLength;i++)
+	{
+		Str4Send[i] = temp[i];
+	}
+	SetEvent(m_hSendEvent);
+}
+
+void CSerialPortApi::Send( uchar str[], unsigned int SendLength)
+{
+	if(!Str4Send)
+		Str4Send = new uchar[SendLength];
+	for(size_t i = 0;i < SendLength;i++)
+	{
+		Str4Send[i] = str[i];
+	}
+	mSendLength = SendLength;
 	SetEvent(m_hSendEvent);
 }
 
@@ -233,8 +252,7 @@ UINT CSerialPortApi::SendThreadProc(LPVOID pParam)
 		if(capi->m_hCom==INVALID_HANDLE_VALUE)
 			return 0;
 
-		DWORD len = capi->Str4Send.GetLength();
-		WriteFile(capi->m_hCom,capi->Str4Send.GetBuffer(len),len,&dwWrite,&overlapped);
+		WriteFile(capi->m_hCom,capi->Str4Send,capi->mSendLength,&dwWrite,&overlapped);
 	}
 	return 0;
 }
@@ -295,7 +313,7 @@ UINT CSerialPortApi::RevThreadProc(LPVOID pParam)
  								continue;
  						}
  						capi->m_bRevCS.Lock();
- 						for(int i = 0;i<dwBytesRead;i++)
+ 						for(unsigned int i = 0;i<dwBytesRead;i++)
  						{
  							capi->m_dequeRevData.push_back(data[i]);
  						}
@@ -306,7 +324,7 @@ UINT CSerialPortApi::RevThreadProc(LPVOID pParam)
  				else
  				{
  					capi->m_bRevCS.Lock();
- 					for(int i = 0;i<dwLength;i++)
+ 					for(unsigned int i = 0;i<dwLength;i++)
  					{
  						capi->m_dequeRevData.push_back(data[i]);
  					}
@@ -326,8 +344,7 @@ CString CSerialPortApi::ReadRecv()
  	CString str,strTemp;
  	str.Empty();
  	m_bRevCS.Lock();
- 	int size = m_dequeRevData.size();
- 	for(int i=0;i<size;i++)
+ 	for(size_t i = 0;i < m_dequeRevData.size();i++)
  	{
  
  		strTemp.Format(_T("%c"),m_dequeRevData[0]);
@@ -357,4 +374,20 @@ INT CSerialPortApi::ClosePort()
 CString CSerialPortApi::ErrorMsg()
 {
 	return m_port.GetError();
+}
+
+deque<BYTE> CSerialPortApi::ReadRecvByte()
+{
+	deque<BYTE> result;
+	if(!ReceiveFlag)
+		return result;
+	m_bRevCS.Lock();
+	for(size_t i = 0;i < m_dequeRevData.size();i++)
+	{
+		result.push_back(m_dequeRevData[0]);
+		m_dequeRevData.pop_front();
+	}
+	ReceiveFlag = FALSE;
+	m_bRevCS.Unlock();
+	return result;
 }
