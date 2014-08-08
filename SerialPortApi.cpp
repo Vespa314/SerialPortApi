@@ -344,9 +344,8 @@ CString CSerialPortApi::ReadRecv()
  	CString str,strTemp;
  	str.Empty();
  	m_bRevCS.Lock();
- 	for(size_t i = 0;i < m_dequeRevData.size();i++)
+ 	while(m_dequeRevData.size() != 0)
  	{
- 
  		strTemp.Format(_T("%c"),m_dequeRevData[0]);
  		m_dequeRevData.pop_front();
  		str += strTemp;
@@ -382,7 +381,7 @@ deque<BYTE> CSerialPortApi::ReadRecvByte()
 	if(!ReceiveFlag)
 		return result;
 	m_bRevCS.Lock();
-	for(size_t i = 0;i < m_dequeRevData.size();i++)
+	while(m_dequeRevData.size() != 0)
 	{
 		result.push_back(m_dequeRevData[0]);
 		m_dequeRevData.pop_front();
