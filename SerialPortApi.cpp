@@ -216,7 +216,7 @@ void CSerialPortApi::Send( CString str )
 	SetEvent(m_hSendEvent);
 }
 
-void CSerialPortApi::Send( uchar str[], unsigned int SendLength)
+void CSerialPortApi::Send( uchar str[], size_t SendLength)
 {
 	if(!Str4Send)
 		Str4Send = new uchar[SendLength];
