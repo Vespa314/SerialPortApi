@@ -95,12 +95,27 @@ static const DWORD STOPBITS[]={ONESTOPBIT,ONE5STOPBITS,TWOSTOPBITS};
 输入参数：
 * **str**：待发送数据
 
+`void CSerialPortApi::Send( uchar str[], size_t SendLength);`
+输入参数：
+* **str**：待发送数据
+* **SendLength**:发送的数据长度
+
+>  **注**:如果发送的数据里面包含'\0',那么只能用第二个函数`Send( uchar str[], size_t SendLength)`
+
 ##### 4.读取数据：
 `CString CSerialPortApi::ReadRecv();`
 返回值:
 * 读取到的数据
 
 >**说明：**读取数据之前请先判断`ReceiveFlag`是否为`TRUE`,否则读到的是空字符串；
+
+`deque<BYTE> CSerialPortApi::ReadRecvByte();`
+返回值:
+* 读取到的数据(字节队列)
+
+>**说明：**读取数据之前请先判断`ReceiveFlag`是否为`TRUE`,否则读到的是空字符串；
+
+>**注**:如果接受的数据里面包含'\0',那么只能用第二个函数`ReadRecvByte()`
 
 ##### 5.读取错误信息：
 `CString CSerialPortApi::ErrorMsg();`

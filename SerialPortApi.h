@@ -53,7 +53,7 @@ public:
 	INT ClosePort();
 	//发送数据
 	void Send(CString str);
-	void Send(uchar str[], unsigned int SendLength);
+	void Send(uchar str[], size_t SendLength);
 	//是否有接受数据未读取
 	BOOL ReceiveFlag;
 	//读取接受的数据  二选一
