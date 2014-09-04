@@ -390,3 +390,43 @@ deque<BYTE> CSerialPortApi::ReadRecvByte()
 	m_bRevCS.Unlock();
 	return result;
 }
+
+vector<CString> CSerialPortApi::ReadRecvByteSplite(char ch)
+{
+	vector<CString> result;
+	CString str_temp = "";
+	if(!ReceiveFlag)
+		return result;
+	m_bRevCS.Lock();
+	while(m_dequeRevData.size() != 0)
+	{
+		int lineflag = 0;
+		for (deque<BYTE>::iterator iter = m_dequeRevData.begin();iter!=m_dequeRevData.end();iter++)
+		{
+			if(*iter == ch)
+			{
+				lineflag = 1;
+				break;
+			}
+
+		}
+		if(!lineflag)
+			break;
+		else
+		{
+			int endflag = 1;
+			while(endflag)
+			{
+				str_temp += m_dequeRevData[0];
+				if(m_dequeRevData[0] == ch)
+					endflag = 0;
+				m_dequeRevData.pop_front();
+			}
+			result.push_back(str_temp);
+			str_temp.Empty();
+		}
+	}
+	ReceiveFlag = FALSE;
+	m_bRevCS.Unlock();
+	return result;
+}

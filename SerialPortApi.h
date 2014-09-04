@@ -59,7 +59,8 @@ public:
 	//读取接受的数据  二选一
 	CString ReadRecv();
 	deque<BYTE> ReadRecvByte();
-
+	vector<CString> ReadRecvByteSplite(char ch);
+	
 	CString ErrorMsg();
 private:
 	//************************************
