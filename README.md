@@ -117,6 +117,15 @@ static const DWORD STOPBITS[]={ONESTOPBIT,ONE5STOPBITS,TWOSTOPBITS};
 
 >**注**:如果接受的数据里面包含'\0',那么只能用第二个函数`ReadRecvByte()`
 
+`vector<CString> ReadRecvByteSplite(char ch);`
+输入参数：
+* **ch**：分隔符
+
+返回值:
+* 读取到的数据(字符串数组)
+
+> 根据结束符`ch`把接收池的数据分割到向量中返回，如果接收池最后一段不完整，继续留在接收池；比如说接受数据以'\r\n'结尾，然后某一次接收池数据是"aaa\r\nbbb\r\nccc\r\ndd"，那么调用ReadRecvByteSplite('\n')，返回结果每一项分别是"aaa\r\n","bbb\r\n","ccc\r\n"，而"dd"因为数据不完整，继续留在接收池，等待之后的数据拼接再次读取;
+
 ##### 5.读取错误信息：
 `CString CSerialPortApi::ErrorMsg();`
 返回值:
