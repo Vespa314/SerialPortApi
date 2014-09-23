@@ -3,6 +3,7 @@
 #include "SerialPort.h"
 #include <afxmt.h>
 #include <deque>
+#include <vector>
 
 #define PORT_DEBUG_MODE 0
 
@@ -42,21 +43,21 @@ public:
 	virtual ~CSerialPortApi(void);
 
 	
-	//ÓĞĞ§¶Ë¿Ú
+	//æœ‰æ•ˆç«¯å£
  	CString PortList[MAX_PORT_NUM];
-	//»ñÈ¡ÓĞĞ§¶Ë¿ÚÊıÄ¿
+	//è·å–æœ‰æ•ˆç«¯å£æ•°ç›®
  	size_t GetPortNum();
 
-	//´ò¿ª´®¿Ú
+	//æ‰“å¼€ä¸²å£
 	INT OpenPort(CString sPort,DWORD dwBaudRate,BYTE byDataBits,BYTE byParity,BYTE byStopBits);
-	//¹Ø±Õ´®¿Ú
+	//å…³é—­ä¸²å£
 	INT ClosePort();
-	//·¢ËÍÊı¾İ
+	//å‘é€æ•°æ®
 	void Send(CString str);
 	void Send(uchar str[], size_t SendLength);
-	//ÊÇ·ñÓĞ½ÓÊÜÊı¾İÎ´¶ÁÈ¡
+	//æ˜¯å¦æœ‰æ¥å—æ•°æ®æœªè¯»å–
 	BOOL ReceiveFlag;
-	//¶ÁÈ¡½ÓÊÜµÄÊı¾İ  ¶şÑ¡Ò»
+	//è¯»å–æ¥å—çš„æ•°æ®  äºŒé€‰ä¸€
 	CString ReadRecv();
 	deque<BYTE> ReadRecvByte();
 	vector<CString> ReadRecvByteSplite(char ch);
@@ -68,8 +69,8 @@ private:
 	// FullName:  CSerialPortApi::getExistPort
 	// Access:    public 
 	// Returns:   void
-	// »ñÈ¡ËùÓĞµÄ¶Ë¿ÚºÅ£¬·ÅÔÚPortListÖĞ;
-	// ²¢ÇÒÉèÖÃÓĞĞ§¶Ë¿ÚÊıÄ¿PortNum
+	// è·å–æ‰€æœ‰çš„ç«¯å£å·ï¼Œæ”¾åœ¨PortListä¸­;
+	// å¹¶ä¸”è®¾ç½®æœ‰æ•ˆç«¯å£æ•°ç›®PortNum
 	//************************************
  	void getExistPort();
 
